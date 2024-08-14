@@ -1,4 +1,4 @@
-# Teen Birth Rate in the U.S.
+# Behind the Numbers: Exploring the Social Drivers of Teen Birth Rates in the U.S
 This is my Master's Project in Columbia Journalism Schnool.
 Data analysis shows that poverty rate, percentage of Trump voters in 2020, and sex education coverage are significant factors influencing a county's teen birth rate.
 
