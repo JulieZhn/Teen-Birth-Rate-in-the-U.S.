@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teen Birth Rates in the U.S.</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.5.1/mapbox-gl.js"></script>
+    <script id="search-js" defer src="https://api.mapbox.com/search-js/v1.0.0-beta.21/web.js"></script>
+
+    <link href="scrolly-styles.css" rel="stylesheet">
+    <script src="https://unpkg.com/intersection-observer@0.5.1/intersection-observer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/scrollama/3.2.0/scrollama.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.3.0/d3.min.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-size: 20px;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            text-rendering: optimizeLegibility;
+        }
+
+        .content {
+            max-width: 640px;
+            margin: auto;
+        }
+
+        .header {
+            padding: 3em 0;
+        }
+
+        a {
+            color: #f05349;
+        }
+
+        .card {
+            margin: auto;
+            width: 100%;
+        }
+
+        .footer {
+            background: white;
+            padding-top: 2em;
+        }
+
+        figure {
+            margin: 0;
+            padding-bottom: 1.2em;
+        }
+
+        figcaption {
+            font-size: 0.8em;
+            text-align: center;
+            margin-top: 0.5em;
+            color: #666;
+        }
+
+        h1 {
+            font-family: 'Lora', Georgia, serif;
+            font-weight: bold;
+            font-size: 3em;
+            line-height: 1.1;
+        }
+
+        h3 {
+            font-family: 'Lora', Georgia, serif;
+            font-weight: bold;
+            font-size: 2em;
+            line-height: 1.1;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+
+        h4 {
+            font-family: 'Lora', Georgia, serif;
+            font-weight: bold;
+            font-size: 1.5em;
+            line-height: 1.1;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+        }
+
+        h5 {
+            font-family: 'Lora', Georgia, serif;
+            font-weight: bold;
+            font-size: 1.3em;
+            line-height: 1.1;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+        }
+
+        .subhead {
+            font-family: 'Lora', Georgia, serif;
+        }
+
+        iframe,
+        img,
+        video {
+            max-width: 100%;
+        }
+
+        p {
+            line-height: 1.6;
+            margin: 0;
+            padding-bottom: 1.2em;
+        }
+
+        ul {
+            margin: 0;
+            padding-bottom: 1em;
+            line-height: 1.6;
+        }
+
+        iframe {
+            padding-bottom: 1.2em;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+            background: #fff880;
+        }
+
+        /* margin on mobile */
+        @media (max-width: 640px) {
+            body {
+                font-size: 18px;
+            }
+
+            .content {
+                padding-left: 0.5em;
+                padding-right: 0.5em;
+            }
+        }
+    </style>
+    <style>
+        .with-image-bg,
+        .with-video-bg {
+            position: relative;
+            background-size: cover;
+            margin-bottom: 2em;
+
+            /* Center everything inside */
+            min-height: 70svh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            /* White text with a shadow */
+            color: white;
+            text-shadow: 0px 0px 30px black,
+                0px 0px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .with-image-bg {
+            background-image: url('bg-image.jpg');
+        }
+
+        .video-background {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .video-background video {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+
+        .row-container {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            gap: 2em;
+            max-width: 680px;
+        }
+
+        .column-container {
+            flex-grow: 1;
+        }
+
+        @media (max-width: 650px) {
+            .row-container {
+                flex-direction: column;
+            }
+        }
+
+        #map {
+            width: 100%;
+            height: 85vh;
+            margin-bottom: 1em;
+        }
+
+        .mapboxgl-popup {
+            max-width: 400px;
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+
+        .top-panel {
+            z-index: 1;
+            background: white;
+            width: 180px;
+            position: absolute;
+            border: 2px solid black;
+            padding: 7px;
+            margin: 15px;
+        }
+
+        @media (max-width: 960px) {
+            .top-panel {
+                background: red;
+                width: 85%;
+            }
+        }
+    </style>
+
+</head>
+
+
+<body>
+    <div class="header with-video-bg">
+        <div class="video-background">
+            <video src="header_background.mp4" preload="auto" tabindex="0" playsinline autoplay loop muted></video>
+        </div>
+        <div class="content">
+            <h1>Behind the Numbers: Exploring the Social Drivers of Teen Birth Rates in the U.S.</h1>
+            <p class="subhead">Data analysis shows that poverty rate, percentage of Trump voters in 2020, and sex education coverage are significant factors influencing a county's teen birth rate.</p>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="byline">
+            <p>By <a href="https://juliezhn.github.io/">Julie Zhu</a></p>
+        </div>
+        <p>Forty years ago, more than 50 out of every 1,000 teenagers aged 15 to 19 in the United States. gave birth.
+            This was also when Sabrina Cabello, then a 16-year-old high school student from the Bronx, had her son. She
+            had never received sex education, and she and her boyfriend at the time believed they were being careful by
+            using the pull-out method.</p>
+        <p>At that time, students usually didn’t take the health class until the last semester before
+            graduation, by which time many were already sexually active. In Sabrina’s eyes, the class wasn’t effective
+            in helping students prevent pregnancy, particularly with projects like the egg assignment.</p>
+        <p>To pass class, Sabrina carried a boiled egg around for a week, pretending it was her baby. She needed to
+            ensure her egg wasn’t cold or broken, so she put it in the refrigerator to keep it safe. Otherwise, her real
+            baby might squeeze and break the egg, causing Sabrina to risk failing the class.
+        </p>
+        <p>“This is not a simulation of what parenting is like. An egg doesn’t cry, doesn’t need diaper changes, and
+            there are no daycare costs,” said Sabrina in a recent interview. “This is not realistically helping anybody
+            avoid pregnancy.”
+        </p>
+        <p>Since the 1980s, teen births increased until peaking in 1991, when more than 60 out of every 1,000 teenagers
+            had babies. Since then, the number has steadily declined, and now there are only 13.2 births per 1,000
+            female teenagers, marking a decrease of 78 percent.
+        </p>
+        <p>The significant improvement in reducing teen births is closely linked to the rise in education levels and
+            increased access to resources and opportunities for females. In the 1980s, only about two-thirds of teenage
+            girls graduated from high school. By 2022, this figure had risen to around 92 percent.</p>
+
+    </div>
+
+    <section id="scrolly-images" class="scrolly-container">
+        <div class="sticky-thing">
+            <img src="PNG/1.png">
+        </div>
+        <div class="steps-container">
+            <div class="step" id="step0">
+                <div></div>
+            </div>
+            <div class="step" id="step1">
+                <div></div>
+            </div>
+            <div class="step" id="step2">
+                <div></div>
+            </div>
+            <div class="step" id="step3">
+                <div></div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <div class="content">
+        <p>Since more teens' parents have graduated from high school in the past decades, teens are likely to follow
+            suit and pursue higher education, said Dr. Claire Brindis, a Distinguished Emerita Professor of Pediatrics
+            and Health Policy at the University of California, San Francisco. This trend provides them with more options
+            and opportunities.
+        </p>
+        <p>Dr. Brindis noted that for today's female teens, having a baby is no longer the only way to feel positive
+            about their identities, and teenagers realize that having a baby will hinder their promising future when
+            they see more career opportunities are available.
+        </p>
+        <p>Although the country has generally experienced a great decline in teen births, there are still some states
+            with high rates of teenage births. According to <a
+                href='https://www.cdc.gov/nchs/data/nvsr/nvsr73/nvsr73-02.pdf'>CDC’s 2022 birth data report</a>,
+            Mississippi topped the list, with over 26 out of every 1,000 teenagers being teen moms. The state was
+            followed by Arkansas (25), Louisiana (24), Kentucky (22), and Oklahoma (21).
+        </p>
+        <p>“These states are more conservative,” said Estelle Raboni, the director of Sexual and Reproductive Health at
+            the Department of Health & Mental Hygiene in New York City. “Local cultural and religious beliefs about
+            premarital sexual activity shape their public health policies.”
+        </p>
+        <p>According to an analysis of 2022 teen birth rate data from CDC and 2020 presidential election results from <a
+                href='https://www.cnn.com/election/2020/results/president'>CNN</a>, nine of the top ten states with the
+            highest teen birth rates had more Republican voters in the 2020
+            presidential election. John S. Santelli, a Professor of Population and Family Health and Pediatrics at
+            Columbia University, pointed out the association between political affiliations and teen birth rates.
+        </p>
+        <p>“Southern states and red states (states with more Republican voters) are generally more conservative toward
+            sex and sex education, also more religiously conservative and less likely to get contraceptives, so teen
+            pregnancy rates tend to be higher,” said Professor Santelli.
+        </p>
+        <p>A data regression model using CDC teen birth rates data at the U.S. county level and the 2022 American Census
+            Survey shows the availability of sex education really mattered to birth rates among teenagers. Counties that
+            emphasize abstinence in sex education tend to have higher teen birth rates, meaning teenagers there are
+            still having sex, and are more likely to give birth compared to teenagers in counties that have no
+            requirement for abstinence education.
+        </p>
+        <p>Among the <a
+                href='https://siecus.org/wp-content/uploads/2021/09/2022-Sex-Ed-State-Law-and-Policy-Chart.pdf'>26
+                states with emphasis on abstinence</a>, 18 were “red states” in the 2020 presidential election,
+            according to an analysis of the data.</p>
+        <p>
+            Dr. Keri Weed, a psychology professor from the University of South Carolina Aiken, noted that health care
+            officials in these states are aware of the situation, but funding for sex education traditionally comes from
+            national programs that must follow abstinence-only guidelines. These guidelines are often shaped more by the
+            political authorities in power and their religious beliefs than by what is proven to work, though this may
+            change with shifts in political leadership.</p>
+        <p>Beyond education and political factors, the data analysis shows that the poverty rate and related factors,
+            such as health insurance coverage and median household income, significantly contribute to teen birth rates.
+            Counties with higher teen poverty rates, lower insurance coverage, and lower median household incomes tend
+            to have higher percentages of teen moms.</p>
+        <p>“In a county with a much lower poverty rate, pregnant teens have more available options, such as continuing
+            their education, finding jobs, and making informed decisions about marriage and parenthood, which might lead
+            them to consider abortion,” said Dr. Weed.</p>
+        <p>Dr. Weed also pointed out that these counties usually have higher median household incomes and insurance
+            coverage rates, meaning more healthcare providers would be available there to offer more options for
+            pregnant teenagers, including abortion and adoption services, as well as support for those who choose to
+            keep their babies, and point them in the right direction.</p>
+    </div>
+    <div class="card">
+        <img src="PNG/Brindis.png">
+    </div>
+
+    <div class="content">
+        <h3>The Big Picture: Decline in Teen Birth Rates</h3>
+        <p>According to the <a href='https://www.cdc.gov/nchs/data/nvsr/nvsr73/nvsr73-02.pdf'>CDC's birth rate report
+                for 2022</a> and <a href='https://www.cdc.gov/nchs/data/vsrr/vsrr035.pdf'>provisional data for 2023</a>,
+            the birth rate for females ages 15 to 19 in the United States has steadily declined, reaching 13.6 births
+            per 1,000 in 2022, a two-percent drop from 2021. </p>
+        <p>Since 2009, the teen birth rate has consistently fallen, decreasing by 67 percent since 2007. In 2023, the
+            birth rate dropped further to 13.2 births per 1,000, marking another record low.</p>
+        <p>Dr. Brindis believes the steady decline is due to efforts encouraging teenagers to graduate from high school
+            and changes in young girls' perceptions of motherhood.
+        </p>
+        <p>“More parents are graduating from high school, so their kids tend to graduate from high school. Some positive
+            things are happening,” Dr. Brindis said. </p>
+        <p>
+            The huge decline in childbearing in the country is affecting all age groups. Many women and young people are
+            opting not to have children because they're worried about financial burden and environmental issues, Dr.
+            Brindis added.
+        </p>
+        <p>
+            When looking at the teen birth rates by age group, we find the rate for teens aged 15 to 17 stayed steady at
+            5.6 births per 1,000 in both 2022 and 2023. For younger teens aged 10 to 14, the rate has remained unchanged
+            at 0.2 births per 1,000 since 2015. For older teens aged 18 to 19, the rate dropped from 25.8 births per
+            1,000 in 2022 to a record low of 24.9 in 2023.
+        </p>
+    </div>
+
+
+    <section id="scrolly-images-2" class="scrolly-container-2">
+        <div class="sticky-thing-2">
+            <img src="PNG/5.png">
+        </div>
+        <div class="steps-container-2">
+            <div class='whole-chart' class="step-new" id="step4">
+                <div></div>
+            </div>
+            <div class="step-new" id="step5">
+                <div>
+                    <p>Among teens aged 10 to 14, the birth rate decreased from 0.4 per 1,000 in 2021 to 0.2 in 2022.
+                        Experts highlighted unwanted sex, incest, and the vulnerability of these young adolescents in
+                        protecting themselves as key factors contributing to pregnancies in this age group.</p>
+                </div>
+            </div>
+            <div class="step-new" id="step6">
+                <div>
+                    <p>Among teens aged 15-17, the birth rate dropped by more than two-thirds from 2010 to 2022. Experts
+                        attribute this decline to improved graduation rates, better access to sex education and
+                        contraceptives, and more career opportunities for women.</p>
+                </div>
+            </div>
+            <div class="step-new" id="step7">
+                <div>
+                    <p>Among teens aged 18-19, the birth rate dropped by nearly 56% over the past 12 years. Experts
+                        attribute this decline to teens increasingly envisioning a future where having a child is a
+                        choice, not a necessity.</p>
+                </div>
+            </div>
+            <div class="step-new" id="step8">
+                <div>
+                    <p>Teen Birth Rate (Ages 15-19): The teen birth rate decreased from 34.2 per 1,000 to 13.6, a
+                        nearly 60% drop. Even from 2022 to 2023, despite some states imposing strict abortion
+                        restrictions, the national teen birth rate still declined by 3%.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <div class="content">
+        <p>
+            Dr. Weed discussed why the birth rates for younger teens have remained unchanged over the past eight years,
+            even as rates for other age groups have declined.
+        </p>
+        <p>
+            “Younger teens face issues like unwanted sex, rape, and incest, and often feel too vulnerable to protect
+            themselves,” Dr. Weed explained. “Many 12, 13, and 14-year-olds show curiosity and explore their sexuality,
+            but sometimes find themselves in situations they can’t escape from and are reluctant to speak up due to fear
+            or threats.”
+        </p>
+        <p>She also noted that in more conservative areas where abortion is nearly banned, young teens who become
+            pregnant are often unable to terminate their pregnancies, making their situation even more challenging.</p>
+        <p>Dr. Brindis explained that the unchanged rate for younger teens is due to the already low starting point,
+            leaving less room for further decline. Unlike older teens, who generally have higher birth rates, the
+            younger group’s rates are closer to a ceiling. To see further reductions in younger teens, there would need
+            to be targeted support for those who are marginalized and have limited options, as these individuals are
+            more likely to have fewer resources and alternatives besides keeping a baby.</p>
+        <p>The huge drop in teen birth rates had also to do with social media and pop culture. “Since the 1990s, there
+            have been more movies and television shows telling young people not to have sex unless they have a condom,”
+            said Dr. Weed. “Safe sex is valued in today’s pop culture.”</p>
+    </div>
+
+    <div class="content">
+        <h3>Poverty is the Driver of Every Problem. But HOPE is Everything.</h3>
+        <p>Since 2000, New York City has seen an 80 percent decrease in pregnancy rates among teenagers ages 15 to 19.
+            However, despite this significant progress, poverty remains a key factor in neighborhoods with high teen
+            birth rates.
+        </p>
+        <p>According to <a href='https://www.nyc.gov/assets/doh/downloads/pdf/vs/2021sum.pdf'>a 2021 vital statistics
+                report</a> released by the New York City Department of Health and Mental Hygiene, teen birth rates in
+            very high-poverty neighborhoods (where 30 percent or more of the population lives below the Federal Poverty
+            Line) were 14.1 births per 1,000 population, which is 4.2 times higher than in low-poverty neighborhoods
+            (where less than 10 percent of the population lives below the Federal Poverty Line).</p>
+        <p>“Poverty tends to inform those communities. Poverty not only impacted teen pregnancy rates but also high
+            unemployment rate, levels of incarceration or rates of diabetes or poor housing stock,” said Raboni.“Poverty
+            drives everything, but underneath poverty is structural racism.”
+        </p>
+        <p>She introduced that the neighborhoods that have been disinvested for decades in the city have been redlined
+            and deeply segregated, with predominantly Black and Brown people living there.
+            Parents in these disadvantaged neighborhoods may not have completed high school and are unable to secure
+            high-paying jobs or health insurance that comes with those jobs, perpetuating these issues into the next
+            generation.</p>
+        <p>Beyond intergenerational financial poverty, various forms of poverty, including a lack of hope, can make teen
+            moms even more vulnerable.</p>
+        <p>
+            “If a young person grows up believing they have many opportunities ahead and can achieve anything, they will
+            hold on to that hope. That hope will drive them to access resources and opportunities, whether it's going to
+            college or pursuing other goals, and they won't let anything stand in their way,” said Raboni. “Teenagers
+            with hope are more likely to use birth control or delay becoming sexually active to stay on their chosen
+            path.”
+        </p>
+        <p>
+            Dr. Brindis stressed that a sense of future and a sense of empowerment is crucial. Teenagers need to have
+            the ability to move on with their lives and not be truncated by the fact that they live in a bad
+            neighborhood.
+        </p>
+        <p>
+            The sense of hope is shaped by various social issues, including violence, alcohol and drugs. <a
+                href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4653097/'>A study</a> examining risk factors
+            contributing to teen pregnancy found a history of child
+            maltreatment significantly increases the risk of teen pregnancy among low-income adolescents, even when
+            accounting for neighborhood disadvantages and other issues. Dr. Weed also pointed out that domestic violence
+            in teens’ families can lead to unwanted sex, which is the major reason for pregnancies among girls under 15,
+            as they are unable to protect themselves.
+        </p>
+        <p>
+            Gun violence and substance abuse are also markers of community stability for teenagers. “In violent
+            communities, young people face the threat of being shot or imprisoned. They may have a child because they
+            want someone to care for their families,” said Dr. Brindis. “Also, when teenagers are addicted to alcohol
+            and drugs, they often lack money, which reflects the community’s hopelessness.”
+        </p>
+        <p>
+            Beyond the living environments, students' important sense of hope is also largely shaped by messages they
+            receive in schools and from adults around them.
+        </p>
+        <p>
+            “Do they receive messages that they are smart and can succeed, or do they receive messages, particularly
+            girls, that their currency, their value is based on how beautiful or attractive they are or whether or not
+            they're able to have families, as opposed to that they're valuable because they're smart and they can go on
+            to careers and things like that,” said Raboni.
+        </p>
+        <p>
+            However, Sabrina's experience was different. She was a straight-A student involved in cheerleading and drama
+            club, and no one expected her to get pregnant at 16 in 1986.
+        </p>
+        <p>
+            Sabrina faced immense pressure when revealing her pregnancy. She had to explain her transfers between a
+            maternity school and her original high school, and parents in her community used her as a cautionary
+            example. Despite trying her best, her grades suffered as she juggled studying and caring for a baby. “That
+            was definitely a self-esteem hit,” she said.
+        </p>
+        <p>
+            Unlike some Black teen moms, Sabrina faced high expectations to succeed academically, compounded by
+            judgments about her pregnancy. Fortunately, her supportive mother helped raise her child and encouraged her
+            to stay hopeful, enabling Sabrina to graduate from college.
+        </p>
+        <p>
+            “She said those people are making judgments and are not going to buy you diapers. They're not going to help
+            you with milk. They're not going to take care of the baby. This is a gift from God and you're okay and we're
+            going to do it together. So that gave me more strength to be, you know, stronger at the moment,” said
+            Sabrina.
+        </p>
+    </div>
+
+    <div class="content">
+        <h3>Blue vs. Red Counties: The Importance of Sex Education</h3>
+        <p>
+            Data analysis reveals that counties with higher percentages of Trump voters in the 2020 election also report
+            higher teen birth rates. <a
+                href='https://creativematter.skidmore.edu/cgi/viewcontent.cgi?article=1003&context=socio_stu_stu_schol#:~:text=I%20have%20also%20considered%20the,states%20across%20all%20racial%20categories.'>A
+                study</a> investigating conservative sex education policies supports this correlation, showing that
+            states with more Republican voters are more likely to prioritize abstinence over contraception in their
+            curricula. Both the study and the data regression model found that abstinence-based education fails to
+            reduce teen birth rates.
+        </p>
+        <p>
+            Dr. Weed believes abstinence education does not resonate with young people and sets unrealistic expectations
+            for them, which is not being sexually active until getting married.
+        </p>
+        <p>
+            “When teenagers enter relationships with this mindset, they are often unprepared when emotion takes over and
+            don’t have contraceptives at hand when they want to have sex,” said Dr. Weed.
+        </p>
+        <p>
+            Dr. Weed highlighted that stressing abstinence would prevent teenagers from accessing the information they
+            need. “Teenagers fear talking to their parents about getting or using condoms, and teachers here in South
+            Carolina schools could be fired for providing sex-related information to students,” said Dr. Weed.
+        </p>
+        <p>
+            Regarding why “red counties” are being conservative toward teenagers’ sex, Dr. Brindis explained a “myth”
+            there: adults feel like sex knowledge is dangerous—that knowledge puts ideas in young people's heads, and it
+            causes young people to have sex, which Dr. Brindis believed is not true.
+        </p>
+        <p>
+            Raboni said that teenagers are actually equally sexually active in “red” and “blue” counties, no matter if
+            adults block their access to information. In fact, she thinks that sex education helps young people delay
+            having sex—with more information, teenagers tend to be more responsible about using contraceptives. Raboni
+            strongly opposes abstinence education, believing it very disrespectful to human behavior and human
+            development.
+        </p>
+        <p>
+            “It's like saying, I don't want you to get into a car accident, therefore never drive a car. And meanwhile,
+            you live in a town where the only way for you to get around is to get in a car. And, you know, so
+            eventually, you're going to have to be back in the car,” said Raboni. “People are going to be sexually
+            active at some point.”
+        </p>
+        <p>
+            Dr. Weed explained that abstinence education in schools reflects the views of the school board, leaders,
+            families, and the entire community. "It's not just that it happens in the classroom. It's saying that this
+            is the culture of the whole community," she said.
+        </p>
+        <p>
+            In southern states like Mississippi and Louisiana, local officials are facing some of the nation's highest
+            maternal mortality and morbidity rates. These regions often experience severe shortages of healthcare
+            providers, known as "provider deserts," limiting access to essential care. In Mississippi, restrictive
+            women's health policies have driven many OBGYNs out of the state, exacerbating the already critical shortage
+            of healthcare services for women.
+        </p>
+
+    </div>
+
+    <div class="container">
+        <div class="top-panel">
+            <h5>Teen Birth Rate and State Political Partisanship</h5>
+            <p>Enter an address to see the state's 2022 teen birth rate (per 1,000) and 2020 presidential election
+                results.</p>
+            <div>
+                <div id="search-box-container"></div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+    <div id="map"></div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoianVsaWV6aHUyMjYiLCJhIjoiY2x5aGNsazQzMDFxcjJpcTE2dmRxNWxnZiJ9.6wSFId_GVwVWNknAmIFpZQ';
+
+
+        const map = new mapboxgl.Map({
+            container: 'map', // container ID, which is the div element we created in the HTML above
+            center: [-98.5795, 39.8283],
+            zoom: 4, // the larger the number, the more specific view of the map;
+            style: 'mapbox://styles/juliezhu226/clzsp239600k901pdbsfm3ets',
+            maxZoom: 8,
+            minZoom: 3
+        });
+
+        map.on('load', () => {
+            // Debug: Log when map load event fires
+            console.log('Map loaded');
+
+            map.addSource('states', {
+                type: 'geojson',
+                data: 'final_map_data.geojson'
+            });
+
+            // Debug: Check if source was added successfully
+            if (map.getSource('states')) {
+                console.log('Source added successfully');
+            } else {
+                console.error('Failed to add source');
+            }
+
+            map.addLayer({
+                'id': 'state-layer',
+                'type': 'fill',
+                'source': 'states',
+                'paint': {
+                    'fill-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'Teen Birth Rate (15-19)'],
+                        4, '#FFF3B5',
+                        6, '#FFEA7C',
+                        8, '#ffde1a',
+                        10, '#ffce00',
+                        12, '#ffa700',
+                        14, '#ff8d00',
+                        16, '#ff7400',
+                        18, '#f03400',
+                        20, '#d40000',
+                        22, '#b80000',
+                        24, '#9b0000',
+                        26, '#7e0000',
+                        28, '#610000',
+                    ],
+                    'fill-opacity': 0.7,
+                    'fill-outline-color': '#000000'
+                }
+            });
+
+            map.addLayer({
+                'id': 'state-borders',
+                'type': 'line',
+                'source': 'states',
+                'paint': {
+                    'line-color': '#000',
+                    'line-width': 1
+                }
+            });
+
+            // Debug: Check if layer was added successfully
+            if (map.getLayer('state-layer')) {
+                console.log('Layer added successfully');
+            } else {
+                console.error('Failed to add layer');
+            }
+
+
+
+
+            const popup = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false
+            });
+
+            map.on('mouseenter', 'state-layer', (e) => {
+                // Change the cursor style as a UI indicator.
+                map.getCanvas().style.cursor = 'pointer';
+
+                // Copy coordinates array.
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const state = e.features[0].properties.name;
+                const teenBirthRate = e.features[0].properties["Teen Birth Rate (15-19)"];
+                const winningParty = e.features[0].properties["winning party"];
+                const winningMargin = e.features[0].properties["winning margin"];
+
+                // Ensure that if the map is zoomed out such that multiple
+                // copies of the feature are visible, the popup appears
+                // over the copy being pointed to.
+                if (['mercator', 'equirectangular'].includes(map.getProjection().name)) {
+                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+                }
+
+                // Populate the popup and set its coordinates
+                // based on the feature found.
+                popup.setLngLat(e.lngLat).setHTML(`
+            <h3>${state}</h3>
+            <p>Teen Birth Rate: ${teenBirthRate}</p>
+            <p>Winning Party: ${winningParty}</p>
+            <p>Winning Margin: ${winningMargin}%</p>
+        `).addTo(map);
+            });
+
+            map.on('mouseleave', 'state-layer', () => {
+                map.getCanvas().style.cursor = '';
+                popup.remove();
+            });
+        });
+
+
+        const script = document.getElementById('search-js');
+
+        // wait for the Mapbox Search JS script to load before using it
+        script.onload = function () {
+            const mapboxAccessToken = 'pk.eyJ1IjoianVsaWV6aHUyMjYiLCJhIjoiY2x5aGNsazQzMDFxcjJpcTE2dmRxNWxnZiJ9.6wSFId_GVwVWNknAmIFpZQ';
+
+            // instantiate a search box instance
+            const searchBox = new mapboxsearch.MapboxSearchBox()
+
+            // set the mapbox access token, search box API options
+            searchBox.accessToken = mapboxAccessToken
+            searchBox.options = {
+                language: 'en',
+
+                // this limits the address search to just this bounding box. in this case, new york city
+                bbox: [-179.148909, 18.910361, -66.93457, 71.538800]
+            }
+
+            // set the mapboxgl library to use for markers and enable the marker functionality
+            searchBox.mapboxgl = mapboxgl
+            searchBox.marker = true
+
+            // bind the search box instance to the map instance
+            searchBox.bindMap(map)
+
+            // add the search box instance to the DOM
+            document.getElementById('search-box-container').appendChild(searchBox)
+        }
+    </script>
+
+    <div class="content">
+        <h4>Midland County: High Income, High Teen Birth Rate</h4>
+        <p>
+            Data analysis shows that if a county has a higher median household income, it tends to have a lower teen
+            birth rate. However, Midland County in Texas is an outlier here—despite having a median household income
+            of
+            $90,000, around middle-level compared to all U.S. counties, it experienced the fourth-highest teen birth
+            rate.
+        </p>
+        <p>
+            Trey Lowe, the executive director of <a href='https://younglifemidland.younglife.org/'>Young Life
+                Midland</a>, explained the reason from demographic and geographic factors.
+        </p>
+        <p>
+            In Midland County, roughly 70% of students in the school districts are Hispanics. Many of them are
+            first—or
+            second-generation Americans. Since Midland County is a traditional oil and gas town, people can make
+            significant profits without a degree.
+        </p>
+        <p>
+            Data from <a href='https://data.census.gov/profile/Midland_County,_Texas?g=050XX00US48329'>Data USA</a>
+            shows that in 2022, mining, quarrying, and oil & gas extraction was the largest industry in Midland
+            County,
+            employing nearly 1 in 5 people with a median annual income of $175,395. However, Midland County's
+            educational attainment lags behind, with local universities awarding only 995 degrees that year, and
+            just
+            about one-third of the population holding a bachelor’s degree or higher—compared to nearly two-thirds in
+            New
+            York County (Manhattan).
+        </p>
+        <p>
+            “So there isn't the desire to push your child into something if you don't think it's needed,” said Lowe.
+            “Many kids go straight into the workforce instead of college, and many 19-year-olds get married right
+            out
+            of high school, with someone earning $100,000 in the oil field.”
+        </p>
+        <p>
+            The difficulty of adhering to Christian values in the strongly religious Midland community also
+            contributes
+            to the high teen birth rate. Despite identifying as Christians, many teenagers still have sex.
+        </p>
+        <p>
+            “Christianity is popular to profess but not to practice,” said Lowe. “Many claim to believe in God and
+            Jesus, but it's less common for high school students to strictly follow biblical teachings. They might
+            identify as Christians because of belief or occasional church attendance, but their faith isn't
+            typically
+            devout.”
+        </p>
+        <p>
+            Despite Midland's high incomes, the cost of living offsets much of the wealth, with housing, food, and
+            other
+            essentials costing more than in other Texas counties, according to Lowe. He noted that Midland County
+            operates in a financial bubble, where wages are inflated—even fast food chains like Whataburger pay $20
+            an
+            hour with benefits, twice the rate seen elsewhere in Texas.
+        </p>
+        <p>
+            “Because if you have a pulse in half of a brain, you can go work in the oil field for three times the
+            money,” said Lowe. “There's so much oil money that the service industry here has to pay higher wages to
+            keep
+            employees, which then goes into the cost of the product.”
+        </p>
+        <p>
+            Beyond the financial bubble, there is also the cultural norm of becoming a young mom after
+            graduating
+            from high school. Lowe’s mom had a daughter when she was 19 years old. He also started his family early
+            and
+            had a daughter when he was 18 years old.
+        </p>
+        <p>“It is not socially acceptable to have a child in high school, but once you graduate, it is definitely
+            acceptable to start a family,” said Lowe. “But girls from higher socio-economic families here are still
+            expected to pursue higher education rather than start a family.”</p>
+        <p>In Texas, abortion has been banned since the Supreme Court overturned Roe vs. Wade in June 2022. In
+            Midland
+            County, where pro-life views dominate, some girls who wish to terminate their pregnancies drive 45
+            minutes
+            to Mexico for abortion services.</p>
+        <p>“It is not something girls would be proud of to get pregnant here in high school. It's something they're
+            ashamed of. So if they are having an abortion, they won’t let anyone know and move on with their life,”
+            said
+            Lowe.</p>
+        <p>Beyond driving to Mexico, pregnant teens can also use morning-after pills for a drug abortion, which
+            remains
+            legal in some areas of Texas. However, these pills are only effective if taken at the right time in the
+            pregnancy cycle, and most young people don’t know how to do this without adult guidance.</p>
+        <p>“If you don't have doctors or professionals to tell you how to do the right thing, then younger people
+            just
+            gather abortion drugs and do it by themselves,” said Dr. Weed. “I feel like that will put them at risk.”
+        </p>
+    </div>
+
+    <div class="content">
+        <h4>Sex Education Programs in New York City </h4>
+        <p>In contrast to Midland County, New York City advocates for earlier sex education. Raboni noted that since
+            2011, the Department of Education has recommended public schools implement evidence-based sex education
+            in sixth and ninth grades, and built various related programs to equip teenagers with the knowledge
+            before they become sexually active to stay healthy.
+        </p>
+    </div>
+
+    <section id="scrolly-images-3" class="scrolly-container-3">
+        <div class="sticky-thing-3">
+            <img src="JPG/1.JPG">
+            <p>www</p>
+        </div>
+        <div class="steps-container-3">
+            <div class="step step-vnew" id="step9">
+                <div>
+                    <p>For young people with developmental and cognitive disabilities, the city offers a program
+                        called <a
+                            href='https://www.nyc.gov/site/doh/health/neighborhood-health/new-york-city-teens-connection.page'>“New
+                            York City Teens Connection”</a> to provide them with sex education. This initiative
+                        helps protect these vulnerable teens from assault by ensuring they receive proper education.
+                    </p>
+                </div>
+            </div>
+            <div class="step step-vnew" id="step10">
+                <div>
+                    <p>State and city programs, including the <a
+                            href='https://www.health.ny.gov/health_care/medicaid/program/longterm/familyplanbenprog.htm'>Family
+                            Planning Benefit program</a>, allow minors to access sexual health services without
+                        parental consent, notification, or the use of their parents' insurance.</p>
+                </div>
+            </div>
+            <div class="step step-vnew" id="step11">
+                <p>Clinic tours also allow students to meet social workers in person and figure out what services
+                    they can get from the clinics, Raboni introduced.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <div class="content">
+        <p>With its developed system and effective education, New York City has seen an 80% decrease in pregnancy
+            rates among teens aged 15 to 19 since 2000, which is 8% greater han the national decline in teen birth
+            rates. </p>
+        <p>“I think the reason for the decline in birth rates is that young people are becoming sexually active
+            later, when they have more critical thinking skills,” said Raboni. Dr. Brindis added that, on a national
+            level, fewer teenagers are going on dates, which also contributes to delayed sexual activity.</p>
+        <p>But that doesn’t mean that young people have stopped becoming sexually active. She believes early sex
+            education and accessible contraception had a primary impact in decreasing teen pregnancy rates over the
+            past 20 years. </p>
+        <p>Looking ahead, Dr. Brindis emphasized the need to shift more people toward supporting early sex education
+            and moving away from the belief that sex knowledge leads teens to have sex earlier. </p>
+        <p>“Engaging families in sex education is crucial since many parents lack sufficient sex education
+            themselves and don’t have the skills to be effective educators,” said Dr. Brindis. </p>
+    </div>
+
+
+    <script>
+            /*************
+            
+            This is the JavaScript that makes the scrolly work 
+            
+            *************/
+
+            /* 
+            This part attaches a scroll to the element with id="scrolly-images"    
+            */
+            (() => {
+                const scroller = scrollama()
+
+                scroller
+                    .setup({
+                        parent: document.querySelector("#scrolly-images"),
+                        step: ".step",
+                        offset: 0.6,
+                        debug: false,
+                    })
+                    .onStepEnter(function ({ element, index, direction }) {
+                        const event = new CustomEvent("stepin", { detail: { direction: direction } })
+                        element.dispatchEvent(event)
+                    })
+                    .onStepExit(function ({ element, index, direction }) {
+                        const event = new CustomEvent("stepout", { detail: { direction: direction } })
+                        if (direction === "up" && element.previousElementSibling) {
+                            const event = new CustomEvent("stepin", { detail: { direction: direction } })
+                            element.previousElementSibling.dispatchEvent(event)
+                        }
+                    })
+
+                window.addEventListener("resize", scroller.resize)
+            })()
+
+        /*
+        This part sets up your actions. In this case, it's changing the image in the scrolly container.
+        */
+        d3.select("#step0").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container")).select("img").attr("src", "PNG/1.png")
+        })
+
+        d3.select("#step1").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container")).select("img").attr("src", "PNG/2.png")
+        })
+
+        d3.select("#step2").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container")).select("img").attr("src", "PNG/3.png")
+        })
+
+        d3.select("#step3").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container")).select("img").attr("src", "PNG/4.png")
+        })
+    </script>
+
+    <script>
+
+            (() => {
+                const scroller2 = scrollama()
+
+                scroller2
+                    .setup({
+                        parent: document.querySelector("#scrolly-images-2"),
+                        step: ".step-new",
+                        offset: 0.6,
+                        debug: false,
+                    })
+                    .onStepEnter(function ({ element, index, direction }) {
+                        const event = new CustomEvent("stepin", { detail: { direction: direction } })
+                        element.dispatchEvent(event)
+                    })
+                    .onStepExit(function ({ element, index, direction }) {
+                        const event = new CustomEvent("stepout", { detail: { direction: direction } })
+                        if (direction === "up" && element.previousElementSibling) {
+                            const event = new CustomEvent("stepin", { detail: { direction: direction } })
+                            element.previousElementSibling.dispatchEvent(event)
+                        }
+                    })
+
+                window.addEventListener("resize", scroller2.resize)
+            })()
+
+        d3.select("#step4").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container-2")).select("img").attr("src", "PNG/5.png")
+        })
+
+        d3.select("#step5").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container-2")).select("img").attr("src", "PNG/6.png")
+        })
+
+        d3.select("#step6").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container-2")).select("img").attr("src", "PNG/7.png")
+        })
+
+        d3.select("#step7").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container-2")).select("img").attr("src", "PNG/8.png")
+        })
+
+        d3.select("#step8").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container-2")).select("img").attr("src", "PNG/9.png")
+        })
+
+    </script>
+
+
+
+    <script>
+
+            (() => {
+                const scroller3 = scrollama()
+
+                scroller3
+                    .setup({
+                        parent: document.querySelector("#scrolly-images-3"),
+                        step: ".step",
+                        offset: 0.6,
+                        debug: false,
+                    })
+                    .onStepEnter(function ({ element, index, direction }) {
+                        const event = new CustomEvent("stepin", { detail: { direction: direction } })
+                        element.dispatchEvent(event)
+                    })
+                    .onStepExit(function ({ element, index, direction }) {
+                        const event = new CustomEvent("stepout", { detail: { direction: direction } })
+                        if (direction === "up" && element.previousElementSibling) {
+                            const event = new CustomEvent("stepin", { detail: { direction: direction } })
+                            element.previousElementSibling.dispatchEvent(event)
+                        }
+                    })
+
+                window.addEventListener("resize", scroller3.resize)
+            })()
+
+        d3.select("#step9").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container-3")).select("img").attr("src", "JPG/1.JPG")
+        })
+
+        d3.select("#step10").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container-3")).select("img").attr("src", "JPG/2.JPG")
+        })
+
+        d3.select("#step11").on('stepin', (e) => {
+            d3.select(e.target.closest(".scrolly-container-3")).select("img").attr("src", "JPG/3.JPG")
+        })
+
+
+    </script>
+
+
+
+
+
+
+
+
+    <style>
+        /* Change this to adjust the padding between steps */
+        .step {
+            margin-bottom: 70vh;
+        }
+    </style>
+
+
+
+    <div class="footer">
+        <img src="PNG/Zhu.png">
+    </div>
+</body>
+
+</html>
